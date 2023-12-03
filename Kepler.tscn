@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://8vo1qh2esbk7"]
+
+[ext_resource type="Script" path="res://kepler.gd" id="1_t2ues"]
+[ext_resource type="Script" path="res://Orbit.gd" id="2_q3mks"]
+
+[node name="Kepler" type="Node"]
+script = ExtResource("1_t2ues")
+
+[node name="Orbit" type="Node3D" parent="."]
+script = ExtResource("2_q3mks")
