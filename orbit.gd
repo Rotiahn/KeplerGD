@@ -25,25 +25,26 @@ extends Kepler
 # constants
 
 # @export variables
+
 ## PROPERTIES IN INSPECTOR ##
 
 @export var primary: AstroBody
 
 #Orbital Elements
-@export_group("Orbital Elements")
+@export_group("OrbitalElements")
 @export var a: int = 0  							## Semi-major axis, a (m)
 @export var ecc: float = 0 							## Eccentricity, e, (circular: ecc=0, eliptical: 0<ecc<1, parabolic: ecc=1, hyperbolic: e>1)
 @export_range(0,360) var mAnomalyDeg: float = 0		## Mean anomaly, M
 @export_range(0,360) var rotIDeg: float = 0 		## Inclination w.r.t xz-plane, i       
 @export_range(0,360) var rotWDeg: float = 0			## Argument of Perifocus, w
 @export_range(0,360) var rotOmegDeg: float = 0 		## Longitude of Ascending Node, OMEGA  
-#@export var mu : float=0 							## Standard Gravitational Parameter  (m^3/s^2) 
 #@export var peri: int = 0 							## Periapsis distance, q (m)
+#@export var mu : float=0 							## Standard Gravitational Parameter  (m^3/s^2) 
 #@export var apo: int = 0  							## Apoapsis distance (m)
 #@export var T: float = 0							## Sidereal orbit period (s)
 #@export var meanMotion: float = 0 					## Mean motion, n (rad/s)
 #@export var periT: float = 0 						## Time of periapsis (s)
-@export_group("")
+#@export_group("")
 
 
 # public variables

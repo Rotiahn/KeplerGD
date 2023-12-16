@@ -36,20 +36,23 @@ extends Kepler
 ## PROPERTIES IN INSPECTOR ##
 
 @export var id: String = "AstroBody"		## ID to use for this AstroBody
-@export var mass: int = 1					##Mass of this AstroBody
-@export var orbit: Orbit  						##The orbit object for this AstroBody
+@export var mass: float = 1.0e0				##Mass of this AstroBody
+@export var orbit: Orbit  					##The orbit object for this AstroBody
 
 # public variables
 var satellites = []				##Array of satellites which have this AstroBody as primary
 var primary:AstroBody
 
 # private variables
+
 # @onready variables
+
 # optional built-in virtual _init method
 func _init(
-    id: String=id,
-    mass: int=mass,
-    orbit: Orbit=orbit,
+    id: String = id,
+    mass: float = mass,
+    orbit: Orbit = orbit,
+    
 ):
     pass
     
