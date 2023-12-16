@@ -71,13 +71,13 @@ var E: float = 0							## Eccentric anomaly (rad)
 # built-in virtual _ready method
 # Called when the node enters the scene tree for the first time.
 func _init(
-    param_primary:AstroBody,
-    param_a:int,
-    param_ecc:float,
-    param_mAnomaly:float,
-    param_rotI:float,
-    param_rotW:float,
-    param_rotOmeg:float,
+    param_primary:AstroBody = primary,
+    param_a:int = a,
+    param_ecc:float = ecc,
+    param_mAnomaly:float = mAnomaly,
+    param_rotI:float = rotI,
+    param_rotW:float = rotW,
+    param_rotOmeg:float = rotOmeg,
 ):
     primary = param_primary
     a = param_a
