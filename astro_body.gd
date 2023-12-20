@@ -39,8 +39,10 @@ extends Kepler
 @export var mass: float = 1.0e0				##Mass of this AstroBody
 @export var orbit: Orbit  					##The orbit object for this AstroBody
 
+@export_exp_easing("positive_only") var mass2: float = 1.0e0
+
 # public variables
-var satellites = []				##Array of satellites which have this AstroBody as primary
+var satellites:Array = []				##Array of satellites which have this AstroBody as primary
 var primary:AstroBody
 
 # private variables
@@ -53,19 +55,22 @@ func _init(
     mass: float = mass,
     orbit: Orbit = orbit,
     
-):
+) -> void:
     pass
     
 # optional built-in virtual _enter_tree() method
 # built-in virtual _ready method
 
 
-func _ready():
+func _ready()-> void:
     #If we don't have an orbit assigned, Give ourselves the NULL Orbit 
     #  This implies this AstroBody sits at center of system and doesn't move
     if orbit == null:
         orbit = Orbit.new(null,0,0,0,0,0,0)
     primary = orbit.primary
+    
+    print("mass2")
+    print(mass2)
 
     #Create various functions related to having an orbit
     #var primary = orbit.primary		##The Primary for this Astrobody is based on it orbit
@@ -74,23 +79,23 @@ func _ready():
 # public methods
 
 # @borrows KEPLER.Orbit.getElements as getElements 
-func getElements():
+func getElements()->Dictionary:
     return orbit.getElements()
 
 # @borrows KEPLER.Orbit.getPosition as getPosition 
-func getPosition():
+func getPosition() -> Vector3:
     return orbit.getPosition()
 
 # @borrows KEPLER.Orbit.getVelocity as getVelocity 
-func getVelocity():
+func getVelocity() -> Vector3:
     return orbit.getVelocity()
 
 # @borrows KEPLER.Orbit.addTime as addTime 
-func addTime(seconds):
+func addTime(seconds:float) -> Orbit:
     return orbit.addTime(seconds)
 
 # @borrows KEPLER.Orbit.subTime as subTime 
-func subTime(seconds):
+func subTime(seconds:float) -> Orbit:
     return orbit.subTime(seconds)
 
 
@@ -105,28 +110,35 @@ func subTime(seconds):
 # * //All True:
 # * for (key in Object.keys(orbitA.getElements())) {console.log(key,':',(orbitA.getElements()[key]===orbitB.getElements()[key]));};
 # * @public
-func clone():
+func clone() -> AstroBody:
     #Part I: gather Orbital Elements
     #this.updateAllElements();
-    var elements = getElements();
+    var elements:Dictionary = getElements();
     #var id = id;
     #var mass = this.mass;
     #var satellites = this.satellites;
 
+    var a2:float = elements["a"]
+    var ecc2:float = elements["ecc"]
+    var mAnomaly2:float = elements["mAnomaly"]
+    var rotI2:float = elements["rotI"]
+    var rotW2:float = elements["rotW"]
+    var rotOmeg2:float = elements["rotOmeg"]
+
     #Part II: Create clone of Orbit
-    var cloneOrbit = Orbit.new(
+    var cloneOrbit:Orbit = Orbit.new(
         primary
-        ,elements.a
-        ,elements.ecc
-        ,elements.mAnomaly
-        ,elements.rotI
-        ,elements.rotW
-        ,elements.rotOmeg
+        ,a2
+        ,ecc2
+        ,mAnomaly2
+        ,rotI2
+        ,rotW2
+        ,rotOmeg2
     )
 
     #Part III: Clone Astrobody
-    var cloneAstroBody = AstroBody.new(id,mass,cloneOrbit);
-    for satellite in satellites:
+    var cloneAstroBody:AstroBody = AstroBody.new(id,mass,cloneOrbit);
+    for satellite:AstroBody in satellites:
         cloneAstroBody.addSatellite(satellite.clone());
     return cloneAstroBody;
 
@@ -135,7 +147,7 @@ func clone():
 # * @function addSatellite
 # * @param {KEPLER.AstroBody} satellite
 # * @public
-func addSatellite(satellite):
+func addSatellite(satellite:AstroBody)->void:
     satellites.push_back(satellite)
 
 
@@ -145,8 +157,8 @@ func addSatellite(satellite):
 # * @function removeSatellite
 # * @param {KEPLER.AstroBody} satellite
 # * @public
-func removeSatellite(satellite):
-    satellites = satellites.filter(func(x):return x != satellite)
+func removeSatellite(satellite:AstroBody)->void:
+    satellites = satellites.filter(func(x:AstroBody)->bool:return x != satellite)
    
 # private methods
 # subclasses

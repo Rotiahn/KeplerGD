@@ -32,7 +32,7 @@ extends Kepler
 
 #Orbital Elements
 @export_group("OrbitalElements")
-@export var a: int = 0  							## Semi-major axis, a (m)
+@export var a: float = 0  							## Semi-major axis, a (m)
 @export var ecc: float = 0 							## Eccentricity, e, (circular: ecc=0, eliptical: 0<ecc<1, parabolic: ecc=1, hyperbolic: e>1)
 @export_range(0,360) var mAnomalyDeg: float = 0		## Mean anomaly, M
 @export_range(0,360) var rotIDeg: float = 0 		## Inclination w.r.t xz-plane, i       
@@ -50,11 +50,11 @@ extends Kepler
 # public variables
 var mAnomaly: float = mAnomalyDeg * PI / 180		## Mean anomaly, M
 var rotI: float = rotIDeg * PI / 180 		## Inclination w.r.t xz-plane, i       
-var rotW: float = rotWDeg * PI / 180			## Argument of Perifocus, w
-var rotOmeg: float = rotOmegDeg * PI / 180 		## Longitude of Ascending Node, OMEGA  
+var rotW: float = rotWDeg * PI / 180		## Argument of Perifocus, w
+var rotOmeg: float = rotOmegDeg * PI / 180 	## Longitude of Ascending Node, OMEGA  
 var mu : float=0 							## Standard Gravitational Parameter  (m^3/s^2) 
-var peri: int = 0 							## Periapsis distance, q (m)
-var apo: int = 0  							## Apoapsis distance (m)
+var peri: float = 0 						## Periapsis distance, q (m)
+var apo: float = 0  						## Apoapsis distance (m)
 var T: float = 0							## Sidereal orbit period (s)
 var meanMotion: float = 0 					## Mean motion, n (rad/s)
 var tAnomaly: float = 0						## True anomaly, nu (rad)
@@ -73,13 +73,13 @@ var E: float = 0							## Eccentric anomaly (rad)
 # Called when the node enters the scene tree for the first time.
 func _init(
     param_primary:AstroBody = primary,
-    param_a:int = a,
+    param_a:float = a,
     param_ecc:float = ecc,
     param_mAnomaly:float = mAnomaly,
     param_rotI:float = rotI,
     param_rotW:float = rotW,
     param_rotOmeg:float = rotOmeg,
-):
+)->void:
     primary = param_primary
     a = param_a
     ecc = param_ecc
@@ -95,13 +95,19 @@ func _init(
 # * @function calcualtePeri
 # * @returns {number} peri - (m) the periapsis of the orbit based on its orbital elements
 # * @private
-func _calculatePeri():
+func _calculatePeri() -> float:
     if (ecc < 1): # circular or eliptical
-        return (1 - ecc) * a
+        return (1.0 - ecc) * a
     elif (ecc == 1): # parabolic
         return a
     elif (ecc > 1): # hyperbolic
-        return (1 - ecc) * a
+        return (1.0 - ecc) * a
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculatePeri() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 
 # Calculate Apoapsis
@@ -109,40 +115,55 @@ func _calculatePeri():
 # * @returns {number} apo - (m) the apoapsis of the orbit based on its orbital elements
 # * Infinity for parabolic and hyperbolic orbits
 # * @private
-func _calculateApo():
+func _calculateApo() -> float:
     if (ecc < 1): # circular or eliptical
         return (1 + ecc) * a
     elif (ecc >= 1): # parabolic or hyperbolic
         return INF
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculateApo() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # Calculate Period (Sidereal Year)
 # * @function calculateT
 # * @returns {number} T - (s) The period (sidereal Year) for the orbit.
 # * @private
-func _calculateT():
+func _calculateT() -> float:
     if (ecc < 1): # circular or eliptical
         return 2 * PI * pow( ( (a*a*a)/(mu) ) , 0.5)
     elif (ecc >= 1): # parabolic or hyperbolic
         return INF
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculateT() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # Calculate Mean Motion
 # * @function calculateMeanMotion
 # * @returns {number} meanMotion - (rad/s) the Mean motion of the orbiting body
 # * @private
-func _calculateMeanMotion():
+func _calculateMeanMotion() -> float:
     if (ecc < 1): # circular or eliptical
         return pow( ( (a*a*a)/(mu) ) , -0.5)
     elif (ecc >= 1): #parabolic or hyperbolic
         return INF
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculateMeanMotion() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # Calculate True Anomaly
 # * @function calculateTAnomaly
 # * @returns {number} tAnomaly - (rad) True anomaly, nu
 # * @private
-func _calculateTAnomaly():
+func _calculateTAnomaly() -> float:
     if (ecc == 0): # circular
         return mAnomaly
     elif (ecc < 1): # eliptical
@@ -166,9 +187,9 @@ func _calculateTAnomaly():
 
         #var A = (3/2) * Math.sqrt( mu2p3 ) * (mAnomaly / Math.sqrt( mu2p3 ) )
         #var A = (3/2) * mAnomaly
-        @warning_ignore("integer_division")
-        var A = (3.0/2.0) * mAnomaly;
-        var B = pow(  A + sqrt( (A*A) + 1 )  , (1.0 / 3.0) );
+        #@warning_ignore("integer_division")
+        var A:float = (3.0/2.0) * mAnomaly;
+        var B:float = pow(  A + sqrt( (A*A) + 1 )  , (1.0 / 3.0) );
         tAnomaly = 2 * atan( B - (1/B) );
 
         return tAnomaly
@@ -176,35 +197,45 @@ func _calculateTAnomaly():
         # cosh(F) = (ecc + cos(tAnomaly)) / (1+ecc*cos(tAnomaly))          //http://www.bogan.ca/orbits/kepler/orbteqtn.html
         # Using analogous method as elliptical solution
         E = _calculateE()
-        var tanh_tAnomaly =  sqrt( (1+ecc) )* sin( E/2 ) / sqrt( (1-ecc) )* cos( E/2 )
+        var tanh_tAnomaly:float =  sqrt( (1+ecc) )* sin( E/2 ) / sqrt( (1-ecc) )* cos( E/2 )
         tAnomaly = 2 * atanh(tanh_tAnomaly)
         return tAnomaly
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculateTAnomaly() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # Calculate Time of Periapsis
 # * @function calculatePeriT
 # * @returns {number} periT - (s) Time of periapsis
 # * @private
-func _calculatePeriT():
+func _calculatePeriT() -> float:
     if (ecc < 1): #circular or eliptical
         return pow( ( (a*a*a)/(mu) ) , 0.5) * mAnomaly
     elif (ecc == 1): #parabolic
         return pow( ( (2*a*a*a)/(mu) ) , 0.5) * mAnomaly
     elif (ecc > 1): #hyperbolic
         return pow( ( ((-a)*(-a)*(-a))/(mu) ) , 0.5) * mAnomaly;
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculatePeriT() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # Calculate Eccentric anomaly
 # * @function calculateE
 # * @returns {number} E - (rad)   Eccentric anomaly
 # * @private
-func _calculateE():
+func _calculateE() -> float:
     if (ecc == 0): #circular
         return mAnomaly
     elif (ecc < 1): # eliptical, per guidance from Markus
-        var M = mAnomaly
+        var M:float = mAnomaly
         E = M
-        var i = 0
+        var i:int = 0
         while (abs(E - (ecc * sin(E)) - M) > 0.0000000001):
             E -= (E - ecc * sin(E) - M) / (1 - ecc * cos(E))
             i += 1
@@ -214,21 +245,26 @@ func _calculateE():
     elif (ecc == 1): #parabolic
         #D = tan(tAnomaly/2);
         tAnomaly = _calculateTAnomaly()
-        var D = tan(tAnomaly/2)
+        var D:float = tan(tAnomaly/2)
         return D
     elif (ecc > 1): # hyperbolic
-        var M = mAnomaly;
+        var M:float = mAnomaly;
         #M = ecc * sinh(F) - F
         #0 = ecc * sinh(F) - F - M
-        var F = M
-        var i = 0
+        var F:float = M
+        var i:int = 0
         while (abs((ecc * sinh(F)) - F - M) > 0.0000000001):
             F-= (ecc * sinh(F) - F - M) / (ecc * cosh(F) - 1)
             i += 1
             if (i>=1000):
                 push_error('took too long to determine E for '+(str(get_instance_id())))
         return F
-
+    else: #Something has gone wrong
+        var error_text:String = 'Error: _calculateE() for '
+        error_text += get_parent().name
+        error_text += ' did not have a valid ecc'
+        print(error_text)
+        return -INF
 
 # update Orbital Elements based on Cartesian Position and Velocity
 # * @function keplerize
@@ -236,65 +272,65 @@ func _calculateE():
 # * @param {Vector3} velocity - Vector of current velocity
 # * @see {@link http://microsat.sm.bmstu.ru/e-library/Ballistics/kepler.pdf}
 # * @private
-func _keplerize(new_mu,position,velocity):
+func _keplerize(new_mu:float,position:Vector3,velocity:Vector3) -> Dictionary:
     #var r = Vector3(position) # m
     #var v = Vector3(velocity) # m/s
 
     #This Function is meant to be used for determining orbits from points and velocities.
     #It is primarily used for applying velocity changes and calculating resulting new orbital elements
-    var ang_momentum = position.cross(velocity) # m^2/s
+    var ang_momentum:Vector3 = position.cross(velocity) # m^2/s
 
-    var rot_omeg = atan( ang_momentum.x / (-ang_momentum.z) ) #radians
-    var rot_i = atan( sqrt(ang_momentum.x*ang_momentum.x + ang_momentum.z*ang_momentum.z) / ang_momentum.y ) #radians
+    var rotOmeg2:float = atan( ang_momentum.x / (-ang_momentum.z) ) #radians
+    var rotI2:float = atan( sqrt(ang_momentum.x*ang_momentum.x + ang_momentum.z*ang_momentum.z) / ang_momentum.y ) #radians
 
     #rotate position into orbital frame:
-    var r = Vector3(position); # m
+    var r:Vector3 = Vector3(position); # m
 
-    var axis_omeg = Vector3(0,1,0) # Y+ = North
-    r.rotated(axis_omeg, rot_omeg)
+    var axis_omeg:Vector3 = Vector3(0,1,0) # Y+ = North
+    r.rotated(axis_omeg, rotOmeg2)
 
-    var axis_i = Vector3(1,0,0)
-    r.rotated(axis_i,rot_i)
+    var axis_i:Vector3 = Vector3(1,0,0)
+    r.rotated(axis_i,rotI2)
 
     #determine argument of latitude u, where tan(u) = tan(w+v) = p2/p1
-    var arg_lat = atan(r.z/r.x)  #radians
+    var arg_lat:float = atan(r.z/r.x)  #radians
 
     # a = (GM * r) / (2GM - r*velocity_scalar^2)
     # e = SQRT(1 - (h^2 / (GM*a))
 
-    var mu2 = new_mu;  #  m^3/s^2
-    var r_scalar = position.length()  # m
-    var v_scalar = velocity.length()  # m
-    var h_scalar = ang_momentum.length(); # m^2/s
-    var a = (mu2 * r_scalar) / (2*mu2 - r_scalar*(v_scalar*v_scalar));  #  m^4/s^2  / (m^3/s^2 - m*m/s*m/s) = m^4/s^2  / m^3/s^2 = m
-    var ecc = sqrt(1 - (h_scalar*h_scalar / (mu2*a)));  #  m^2/s * m^2/s  / (m^3/s^2 * m) = m^4/s^2 / m^4/s^2 = no units
+    var mu2:float = new_mu;  #  m^3/s^2
+    var r_scalar:float = position.length()  # m
+    var v_scalar:float = velocity.length()  # m
+    var h_scalar:float = ang_momentum.length(); # m^2/s
+    var a2:float = (mu2 * r_scalar) / (2*mu2 - r_scalar*(v_scalar*v_scalar));  #  m^4/s^2  / (m^3/s^2 - m*m/s*m/s) = m^4/s^2  / m^3/s^2 = m
+    var ecc2:float = sqrt(1 - (h_scalar*h_scalar / (mu2*a2)));  #  m^2/s * m^2/s  / (m^3/s^2 * m) = m^4/s^2 / m^4/s^2 = no units
 
     # radial velocity = position DOT velocity / position_scalar
-    var rad_v = position.dot(velocity) / r_scalar;  #  m*m/s / m = m/s
+    var rad_v:float = position.dot(velocity) / r_scalar;  #  m*m/s / m = m/s
 
     # cos(E) = (a-r)/(ae)
     # sin(E) = (r_scalar*rad_v)/(ecc*sqrt(mu*a))
-    var sin_E = (a-r_scalar)/(a*ecc);
-    var cos_E = (r_scalar*rad_v)/(ecc*sqrt(mu2*a));
+    var sin_E:float = (a2-r_scalar)/(a2*ecc2);
+    var cos_E:float = (r_scalar*rad_v)/(ecc*sqrt(mu2*a2));
 
     # tan(v) = ( sqrt(1-ecc*ecc)*sin_E )/( cos_E - ecc )
-    var v = atan( (sqrt(1-ecc*ecc)*sin_E )/( cos_E - ecc ) );  #radians
+    var v:float = atan( (sqrt(1-ecc2*ecc2)*sin_E )/( cos_E - ecc2 ) );  #radians
 
     # u = w+v = arg_lat
     # w = arg_lat-v
-    var rot_w = arg_lat - v; # radians
+    var rotW2:float = arg_lat - v; # radians
 
     # E - ecc*sin(E) = M
 
-    var E = asin(sin_E)  #radians
-    var M = E - ecc*sin_E;  #radians
+    var E2:float = asin(sin_E)  #radians
+    var mAnomaly2:float = E2 - ecc2*sin_E;  #radians
 
-    var elements = {	 'a'       :a
-                        ,'ecc'     :ecc
-                        ,'mAnomaly':mAnomaly
-                        ,'rotI'    :rotI
-                        ,'rotW'    :rotW
-                        ,'rotOmeg' :rotOmeg
+    var elements:Dictionary = {	 'a'       :a2
+                        ,'ecc'     :ecc2
+                        ,'mAnomaly':mAnomaly2
+                        ,'rotI'    :rotI2
+                        ,'rotW'    :rotW2
+                        ,'rotOmeg' :rotOmeg2
                         }
     return elements
 
@@ -307,19 +343,19 @@ func _keplerize(new_mu,position,velocity):
 # * @returns {KEPLER.Vector3} - Returns a KEPLER.Vector3 which defines the position in the orbit in world reference frame (RELATIVE TO PRIMARY)
 # * @see {@link http://microsat.sm.bmstu.ru/e-library/Ballistics/kepler.pdf}
 # * @private
-func _reverseRotations(vector):
+func _reverseRotations(vector:Vector3)-> Vector3:
     #NOTE: XZ plane is the (typical) plane of reference with X+ axis = reference direction and Y+ axis = "north"
 
     #Part I: Rotate orbit around y world-axis by angle -rotW so that periapsis lines up with reference direction
-    var axisW = Vector3(0,1,0)
+    var axisW:Vector3 = Vector3(0,1,0)
     vector.rotated(axisW,-rotW)
 
     #Part II: Rotate orbital plane around x world-axis by angle -rotI so that orbital plane lines up with reference plane
-    var axisI = Vector3(1,0,0)
+    var axisI:Vector3 = Vector3(1,0,0)
     vector.rotated(axisI,-rotI)
 
     #Part III: Rotate orbital plane around y world-axis by angle -rotOmeg so that ascending node lines up with reference direction
-    var axisOmeg = Vector3(0,1,0)
+    var axisOmeg:Vector3 = Vector3(0,1,0)
     vector.rotated(axisOmeg,-rotOmeg);
 
     return vector;
@@ -330,24 +366,24 @@ func _reverseRotations(vector):
 # * @returns {KEPLER.Vector3} - Returns a KEPLER.Vector3 which defines the position in the orbit (INCORPORATES PRIMARY)
 # * @see {@link http://microsat.sm.bmstu.ru/e-library/Ballistics/kepler.pdf}
 # * @public
-func getPosition():
+func getPosition() -> Vector3:
 
     #Part I: Update Orbital Elements
     #this.updateAllElements();
     updateElement("E")
 
     #Part II: Create initial elipse
-    var position = Vector3(
+    var position:Vector3 = Vector3(
          a*cos(E) -a*ecc
         ,a*sqrt(1-(ecc*ecc))*sin(E)
         ,0
     )
 
     #Part III: Conduct rotations (reversed):
-    var positionFinal = _reverseRotations(position)
+    var positionFinal:Vector3 = _reverseRotations(position)
 
     #Part IV: Add position vector of primary:
-    positionFinal.add(primary.getPosition())
+    positionFinal += primary.getPosition()
 
     return positionFinal
 
@@ -357,7 +393,7 @@ func getPosition():
 # * @returns {KEPLER.Vector3} - Returns a KEPLER.Vector3 which defines the position in the orbit (INCORPORATES PRIMARY)
 # * @see {@link http://microsat.sm.bmstu.ru/e-library/Ballistics/kepler.pdf}
 # * @public
-func getVelocity():
+func getVelocity() -> Vector3:
 
     #Part I: Update Orbital Elements
     #this.updateAllElements();
@@ -365,17 +401,17 @@ func getVelocity():
     updateElement("meanMotion")
 
     #Part II: Create initial elipse
-    var velocity = Vector3(
+    var velocity:Vector3 = Vector3(
          ( (meanMotion*a)/( 1-(ecc*cos(E)) ) )*( -sin(E) )
         ,( (meanMotion*a)/( 1-(ecc*cos(E)) ) )*( sqrt(1-(ecc*ecc))*cos(E) )
         ,0
     )
 
     #Part III: Conduct rotations (reversed):
-    var velocityFinal = _reverseRotations(velocity);
+    var velocityFinal:Vector3 = _reverseRotations(velocity);
 
     #Part IV: Add position vector of primary:
-    velocityFinal.add(primary.getVelocity())
+    velocityFinal +=primary.getVelocity()
 
     return velocityFinal;
 
@@ -390,7 +426,7 @@ func getVelocity():
 # * //updates E (eccentric anomaly)
 # * this.updateElement['E']()
 # * @public
-func updateElement(element):
+func updateElement(element:String) -> float:
     match element:
         "peri"        : peri = _calculatePeri();				return peri
         "apo"         : apo = _calculateApo();					return apo
@@ -399,12 +435,12 @@ func updateElement(element):
         "tAnomaly"    : tAnomaly = _calculateTAnomaly();		return tAnomaly
         "periT"       : periT = _calculatePeriT();				return periT
         "E"           : E = _calculateE(); 						return E
-
+        _             : print("Error: updateElement invalid element"); return -INF
 
 # Update all derivable elements
 # * @function updateAllElements
 # * @public
-func updateAllElements():
+func updateAllElements() -> void:
     updateElement("peri")
     updateElement("apo")
     updateElement("T")
@@ -418,9 +454,9 @@ func updateAllElements():
 # * @function getElements
 # * @returns {Object} - Returns an object which includes all orbital elements.
 # * @public
-func getElements():
+func getElements() -> Dictionary:
     updateAllElements()
-    var retObject = {
+    var retObject:Dictionary = {
             a          :a
         ,ecc        :ecc
         ,mAnomaly   :mAnomaly
@@ -450,13 +486,13 @@ func getElements():
 # * //All True:
 # * for (key in Object.keys(orbitA.getElements())) {console.log(key,':',(orbitA.getElements()[key]===orbitB.getElements()[key]));};
 # * @public
-func clone():
+func clone() -> Orbit:
     #Part I: gather Orbital Elements
     updateAllElements()
-    var elements = getElements();
+    #var elements = getElements();
 
     #Part II: Create clone
-    var clone = Orbit.new(
+    var new_clone:Orbit = Orbit.new(
             primary
         ,a
         ,ecc
@@ -465,19 +501,25 @@ func clone():
         ,rotW
         ,rotOmeg
     )
-    return clone
+    return new_clone
 
  # Add Time: revolve object forward in time
 # * @function addTime
 # * @param {number} time - the time (in seconds) to adjust the object's movement
 # * @returns {KEPLER.Orbit} - Returns this KEPLER.Orbit in it's new state after the transition
 # * @public
-func addTime(deltaTime):
+func addTime(deltaTime:float) -> Orbit:
     #Adding Time can be completely accomplished with updating the mean Anomaly (mAnomaly) with a new value.
     #deltaMAnomaly = (deltaTime*meanMotion)%(2PI)
     updateElement("meanMotion"); # (rad/s)
-    var deltaMAnomaly = ( deltaTime * meanMotion ) % (2 * PI);  # ( (s) * (rad/s) ) % (rad)
-    mAnomaly = ( (mAnomaly+deltaMAnomaly)%(2*PI) + (2*PI) )%(2*PI);  # (rad), forces to always be between 0 and 2PI
+    var deltaMAnomaly:float = fmod ( ( deltaTime * meanMotion ) , (2 * PI) )  # ( (s) * (rad/s) ) % (rad)
+    mAnomaly = fmod (
+            ( 
+              fmod ( (mAnomaly+deltaMAnomaly),(2*PI)) 
+            + (2*PI) 
+            )
+            ,(2*PI)
+        )  # (rad), forces to always be between 0 and 2PI
     updateAllElements();
     return self;
 
@@ -487,7 +529,7 @@ func addTime(deltaTime):
 # * @param {number} time - the time (in seconds) to adjust the object's movement
 # * @returns {KEPLER.Orbit} - Returns this KEPLER.Orbit in it's new state after the transition
 # * @public
-func subTime(deltaTime):
+func subTime(deltaTime:float)->Orbit:
     return addTime(-deltaTime)
 
 
@@ -497,16 +539,16 @@ func subTime(deltaTime):
 # * @returns {KEPLER.Orbit} - Returns a KEPLER.Vector3 which defines the position in the orbit (INCORPORATES PRIMARY)
 # * @see {@link http://microsat.sm.bmstu.ru/e-library/Ballistics/kepler.pdf}
 # * @public
-func addVelocity(deltaV):
+func addVelocity(deltaV:Vector3)->Dictionary:
     #Part I: Get Cartesian elements
-    var position = getPosition();
-    var velocity = getVelocity();
+    var position:Vector3 = getPosition();
+    var velocity:Vector3 = getVelocity();
 
     #Part II: Add deltaV to velocity;
-    velocity.add(deltaV);
+    velocity += deltaV
 
     #Part III: Update orbital elements
-    var result = _keplerize(mu,position,velocity);
+    var result:Dictionary = _keplerize(mu,position,velocity);
 
     a           = result.a;
     ecc         = result.ecc;
