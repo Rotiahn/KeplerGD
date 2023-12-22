@@ -26,6 +26,17 @@ const LIGHT_MINUTE = 1.799e+10
 const LIGHT_HOUR = 1.079e+12
 const LIGHT_DAY = 2.59e+13
 const LIGHT_YEAR = 9.461e+15
+enum LengthEnum { 
+    METER=1,
+    KILOMETER=2,
+    KM=2, 
+    AU=3, 
+    LIGHT_SECOND=4,
+    LIGHT_MINUTE=5,
+    LIGHT_HOUR=6, 
+    LIGHT_DAY=7, 
+    LIGHT_YEAR=8,
+}
 
 #Constants - Time
 const UNIT_TIME = 'second'
@@ -34,7 +45,13 @@ const MINUTE = 60
 const HOUR = 3600
 const DAY = 86400
 const YEAR = 3.154e+7
-
+enum TimeEnum {
+    SECOND=1,
+    MINUTE=2,
+    HOUR=3,
+    DAY=4,
+    YEAR=5
+}
 #Constants - Rotation
 const UNIT_ROTATION = 'Radians'
 const DEGREE = 0.0174533
@@ -47,7 +64,12 @@ const TONNE = 1000
 const TON = TONNE
 const EARTH_MASS = 5.974e24
 const SOL_MASS = 1.9891e30
-
+enum MassEnum {
+    KG=1,
+    TONNE=2,
+    EARTH_MASS=3,
+    SOL_MASS=4,
+}
 #Constants - Physics
 const G = 6.674e-11 # Nm^2 / kg^2 = kg*m*(1/s^2)*m^2*(1/kg^2) = m^3/(kg*s^2)
 
