@@ -32,12 +32,13 @@ extends Kepler
 
 #Orbital Elements
 @export_group("OrbitalElements")
-@export var a: float = 0  							## Semi-major axis, a (m)
-@export var ecc: float = 0 							## Eccentricity, e, (circular: ecc=0, eliptical: 0<ecc<1, parabolic: ecc=1, hyperbolic: e>1)
-@export_range(0,360) var mAnomalyDeg: float = 0		## Mean anomaly, M
-@export_range(0,360) var rotIDeg: float = 0 		## Inclination w.r.t xz-plane, i       
-@export_range(0,360) var rotWDeg: float = 0			## Argument of Perifocus, w
-@export_range(0,360) var rotOmegDeg: float = 0 		## Longitude of Ascending Node, OMEGA  
+@export_range(0.0,1.79769e308,1.0e-14) var a: float = 0  							## Semi-major axis, a (m)
+@export var a_units: LengthEnum = 1                 ##Units for distance (m)
+@export_range(0.0,1.79769e10,1.0e-14) var ecc: float = 0 							## Eccentricity, e, (circular: ecc=0, eliptical: 0<ecc<1, parabolic: ecc=1, hyperbolic: e>1)
+@export_range(0,360,1.0e-14) var mAnomalyDeg: float = 0		## Mean anomaly, M
+@export_range(0,360,1.0e-14) var rotIDeg: float = 0 		## Inclination w.r.t xz-plane, i       
+@export_range(0,360,1.0e-14) var rotWDeg: float = 0			## Argument of Perifocus, w
+@export_range(0,360,1.0e-14) var rotOmegDeg: float = 0 		## Longitude of Ascending Node, OMEGA  
 #@export var peri: int = 0 							## Periapsis distance, q (m)
 #@export var mu : float=0 							## Standard Gravitational Parameter  (m^3/s^2) 
 #@export var apo: int = 0  							## Apoapsis distance (m)
@@ -70,6 +71,47 @@ var E: float = 0							## Eccentric anomaly (rad)
 # optional built-in virtual _enter_tree() method
 
 # built-in virtual _ready method
+func _ready() -> void:
+    print('a')
+    print(a)
+    print(a_units)
+
+    match a_units:
+        LengthEnum.METER:
+            pass
+        LengthEnum.KILOMETER:
+            a *= KILOMETER
+            a_units=LengthEnum.METER
+        LengthEnum.KM:
+            a *= KM
+            a_units=LengthEnum.METER
+        LengthEnum.AU: 
+            a*= AU
+            a_units=LengthEnum.METER
+        LengthEnum.LIGHT_SECOND:
+            a*= LIGHT_SECOND
+            a_units=LengthEnum.METER
+        LengthEnum.LIGHT_MINUTE:
+            a*= LIGHT_MINUTE
+            a_units=LengthEnum.METER
+        LengthEnum.LIGHT_HOUR: 
+            a*= LIGHT_HOUR
+            a_units=LengthEnum.METER
+        LengthEnum.LIGHT_DAY: 
+            a*= LIGHT_DAY
+            a_units=LengthEnum.METER
+        LengthEnum.LIGHT_YEAR:
+            a*=LIGHT_YEAR
+            a_units=LengthEnum.METER
+        _:
+            var error_text:String = 'Error: invalid "A" calculations for '
+            error_text += get_parent().name
+            error_text += ' did not have a valid length_units'
+            print(error_text)
+            a = -INF
+
+    print(a)
+
 # Called when the node enters the scene tree for the first time.
 func _init(
     param_primary:AstroBody = primary,

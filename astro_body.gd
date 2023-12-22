@@ -35,11 +35,37 @@ extends Kepler
 
 ## PROPERTIES IN INSPECTOR ##
 
-@export var id: String = "AstroBody"		## ID to use for this AstroBody
-@export var mass: float = 1.0e0				##Mass of this AstroBody
+#@export var id: String = "AstroBody"		## ID to use for this AstroBody
+
+#@export_exp_easing("positive_only") var mass2: float = 1.0e0
+@export var mass: float = 1.0e0				     ##Mass of this AstroBody
+@export var mass_units: MassEnum = MassEnum.KG   ##Units for Mass
+
 @export var orbit: Orbit  					##The orbit object for this AstroBody
 
-@export_exp_easing("positive_only") var mass2: float = 1.0e0
+#@export_enum(
+    #"KILOMETER",
+    #"KM", 
+    #"AU", 
+    #"LIGHT_SECOND",
+    #"LIGHT_MINUTE",
+    #"LIGHT_HOUR", 
+    #"LIGHT_DAY", 
+    #"LIGHT_YEAR",
+#) var units2: String
+    #
+
+#const LENGTHS_DICT: Dictionary = {
+    #KILOMETER = 1000,
+    #KM = LengthEnum.KILOMETER,
+    #AU = 1.496e+11,
+    #LIGHT_SECOND = 2.998e+8,
+    #LIGHT_MINUTE = 1.799e+10,
+    #LIGHT_HOUR = 1.079e+12,
+    #LIGHT_DAY = 2.59e+13,
+    #LIGHT_YEAR = 9.461e+15,    
+#}
+
 
 # public variables
 var satellites:Array = []				##Array of satellites which have this AstroBody as primary
@@ -51,11 +77,15 @@ var primary:AstroBody
 
 # optional built-in virtual _init method
 func _init(
-    id: String = id,
-    mass: float = mass,
-    orbit: Orbit = orbit,
+    #name: String = "AstroBody",
+    #mass: float = mass,
+    #orbit: Orbit = orbit,
     
 ) -> void:
+    print("AstroBody_init")
+    print(name)
+    print(mass)
+    print(orbit)
     pass
     
 # optional built-in virtual _enter_tree() method
@@ -65,13 +95,40 @@ func _init(
 func _ready()-> void:
     #If we don't have an orbit assigned, Give ourselves the NULL Orbit 
     #  This implies this AstroBody sits at center of system and doesn't move
+    #print("AstroBody_Ready")
+    print(name)
+    #print(mass)
+    #print(orbit)
     if orbit == null:
         orbit = Orbit.new(null,0,0,0,0,0,0)
     primary = orbit.primary
-    
-    print("mass2")
-    print(mass2)
 
+    #Convert Mass input from inspector to KG
+    #print("mass")
+    #print(mass)
+    #print(mass_units)
+
+    match mass_units:
+        MassEnum.KG:
+            #print("KG")
+            pass
+        MassEnum.TONNE:
+            mass *= TONNE
+            mass_units = MassEnum.KG
+        MassEnum.EARTH_MASS:
+            mass *= EARTH_MASS
+            mass_units = MassEnum.KG
+        MassEnum.SOL_MASS:
+            mass *= SOL_MASS
+            mass_units = MassEnum.KG
+        _:
+            var error_text:String = 'Error: invalid mass calculations for '
+            error_text += get_parent().name
+            error_text += ' did not have a valid mass_units'
+            print(error_text)
+            mass = -INF
+ 
+    #print(mass)
     #Create various functions related to having an orbit
     #var primary = orbit.primary		##The Primary for this Astrobody is based on it orbit
 
@@ -137,7 +194,9 @@ func clone() -> AstroBody:
     )
 
     #Part III: Clone Astrobody
-    var cloneAstroBody:AstroBody = AstroBody.new(id,mass,cloneOrbit);
+    #var cloneAstroBody:AstroBody = AstroBody.new(name,mass,cloneOrbit);
+    var cloneAstroBody:AstroBody = AstroBody.new();
+    cloneAstroBody.orbit=cloneOrbit
     for satellite:AstroBody in satellites:
         cloneAstroBody.addSatellite(satellite.clone());
     return cloneAstroBody;
