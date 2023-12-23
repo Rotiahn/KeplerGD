@@ -33,7 +33,7 @@ func draw_orbit()->void:
     for i in range(361):
         calc_orbit.mAnomaly = i * Kepler.DEGREE
         var new_point:Vector3 = calc_orbit.getPosition()
-        print(self.name,new_point)
+        #print(self.name,new_point)
         immediate_mesh.surface_add_vertex(new_point)
     
     immediate_mesh.surface_end()

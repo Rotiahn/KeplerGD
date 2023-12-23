@@ -14,4 +14,5 @@ func _ready() -> void:
 func _process(delta: float) -> void:
     var parent:AstroBody = get_parent()
     position = parent.getPosition() ##Vector3
+    
     pass
