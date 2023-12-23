@@ -425,7 +425,14 @@ func getPosition() -> Vector3:
     var positionFinal:Vector3 = _reverseRotations(position)
 
     #Part IV: Add position vector of primary:
-    positionFinal += primary.getPosition()
+    
+    #if primary is NILL, then it's position is Vector3(0,0,0,0)
+    if (primary == null):
+        #positionFinal += Vector3(0,0,0)
+        pass
+    else:
+        positionFinal += primary.getPosition()
+    
 
     return positionFinal
 
