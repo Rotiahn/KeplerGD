@@ -1,7 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
 
-addons/
+addons/orbit-controls/
 
 project.godot
 
