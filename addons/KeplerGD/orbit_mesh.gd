@@ -1,4 +1,3 @@
-@tool
 class_name OrbitMesh
 extends MeshInstance3D
 
