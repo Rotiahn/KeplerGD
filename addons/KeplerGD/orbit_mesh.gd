@@ -1,10 +1,12 @@
+@tool
 class_name OrbitMesh
 extends MeshInstance3D
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    draw_orbit()
+    #draw_orbit()
+    pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

@@ -111,6 +111,16 @@ func _ready() -> void:
             a = -INF
 
     print(a)
+    mAnomaly = mAnomalyDeg * PI / 180		## Mean anomaly, M
+    rotI = rotIDeg * PI / 180 		## Inclination w.r.t xz-plane, i       
+    rotW = rotWDeg * PI / 180		## Argument of Perifocus, w
+    rotOmeg = rotOmegDeg * PI / 180 	## Longitude of Ascending Node, OMEGA  
+
+    #If there is an OrbitMesh, then trigger it to draw it's orbit
+    var orbitMesh = getOrbitMesh()
+    if orbitMesh:
+        orbitMesh.draw_orbit()
+ 
 
 # Called when the node enters the scene tree for the first time.
 func _init(
