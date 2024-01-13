@@ -133,6 +133,10 @@ func _ready()-> void:
     #var primary = orbit.primary		##The Primary for this Astrobody is based on it orbit
 
 # remaining built-in virtual methods
+func get_class()->String:
+    return "AstroBody"
+
+
 # public methods
 
 # @borrows KEPLER.Orbit.getElements as getElements 

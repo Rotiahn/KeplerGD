@@ -9,7 +9,10 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
-    
+  
+func get_class()->String:
+    return "OrbitMesh"
+  
 
 func draw_orbit()->void:
     var orbit:Orbit = get_parent()

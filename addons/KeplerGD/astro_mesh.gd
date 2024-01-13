@@ -16,3 +16,6 @@ func _process(delta: float) -> void:
     position = parent.getPosition() ##Vector3
     
     pass
+
+func get_class()->String:
+    return "AstroMesh"

@@ -130,6 +130,9 @@ func _init(
     rotW = param_rotW
     rotOmeg = param_rotOmeg
 
+func get_class()->String:
+    return "Orbit"
+
 ##Part II: calculation functions:
     ##Source: http://www.bogan.ca/orbits/kepler/orbteqtn.html
 
