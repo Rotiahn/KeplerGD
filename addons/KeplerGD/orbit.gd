@@ -114,21 +114,24 @@ func _ready() -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _init(
-    param_primary:AstroBody = primary,
-    param_a:float = a,
-    param_ecc:float = ecc,
-    param_mAnomaly:float = mAnomaly,
-    param_rotI:float = rotI,
-    param_rotW:float = rotW,
-    param_rotOmeg:float = rotOmeg,
+#    param_primary:AstroBody = primary,
+#    param_a:float = a,
+#    param_ecc:float = ecc,
+#    param_mAnomaly:float = mAnomaly,
+#    param_rotI:float = rotI,
+#    param_rotW:float = rotW,
+#    param_rotOmeg:float = rotOmeg,
 )->void:
-    primary = param_primary
-    a = param_a
-    ecc = param_ecc
-    mAnomaly = param_mAnomaly
-    rotI = param_rotI
-    rotW = param_rotW
-    rotOmeg = param_rotOmeg
+#    print(name)
+#    primary = param_primary
+#    a = param_a
+#    ecc = param_ecc
+#    mAnomaly = param_mAnomaly
+#    rotI = param_rotI
+#    rotW = param_rotW
+#    rotOmeg = param_rotOmeg
+
+     pass
 
 func get_class()->String:
     return "Orbit"
@@ -544,15 +547,16 @@ func clone() -> Orbit:
     #var elements = getElements();
 
     #Part II: Create clone
-    var new_clone:Orbit = Orbit.new(
-            primary
-        ,a
-        ,ecc
-        ,mAnomaly
-        ,rotI
-        ,rotW
-        ,rotOmeg
-    )
+    var new_clone:Orbit = Orbit.new()
+    new_clone.primary = primary 
+    new_clone.a = a
+    new_clone.ecc = ecc
+    new_clone.mAnomaly = mAnomaly
+    new_clone.rotI = rotI
+    new_clone.rotW = rotW
+    new_clone.rotOmeg = rotOmeg
+
+
     return new_clone
 
  # Add Time: revolve object forward in time
