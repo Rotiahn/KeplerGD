@@ -214,6 +214,6 @@ func addSatellite(satellite:AstroBody)->void:
 # * @public
 func removeSatellite(satellite:AstroBody)->void:
     satellites = satellites.filter(func(x:AstroBody)->bool:return x != satellite)
-   
+ 
 # private methods
 # subclasses

@@ -117,7 +117,7 @@ func _ready() -> void:
     rotOmeg = rotOmegDeg * PI / 180 	## Longitude of Ascending Node, OMEGA  
 
     #If there is an OrbitMesh, then trigger it to draw it's orbit
-    var orbitMesh = getOrbitMesh()
+    var orbitMesh = getChildByClass("OrbitMesh")
     if orbitMesh:
         orbitMesh.draw_orbit()
  
@@ -628,24 +628,6 @@ func addVelocity(deltaV:Vector3)->Dictionary:
     return result;
 
 
-# Check if this Orbit has an OrbitMesh object, if so, return the first one found
-# * @function getOrbitMesh
-# * @returns {KEPLER.OrbitMesh} - Returns a KEPLER.OrbitMesh which is a child of this Orbit
-# * @public
-func getOrbitMesh()->OrbitMesh:
-    var children:Array = get_children()
-    #var childQty:int = get_child_count()
-    #var childTarget:OrbitMesh = null
-    
-    for child in children:
-        if child.get_class() == "OrbitMesh":
-            return child
-        else:
-            continue
-    
-    #No OrbitMesh found
-    return null
-    pass
 
 # private methods
 
