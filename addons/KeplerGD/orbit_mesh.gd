@@ -22,12 +22,24 @@ func draw_orbit()->void:
     mesh = immediate_mesh
     var material:StandardMaterial3D = StandardMaterial3D.new()
     material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-    #material.albedo_color = Color.DEEP_SKY_BLUE
     var astroParent:AstroBody = orbit.get_parent()
-    var astromesh:AstroMesh = astroParent.find_child("Mesh*", false)
+    var astromesh:AstroMesh = astroParent.getChildByClass("AstroMesh")
+    if (astromesh == null):  #We don't have an AstroMesh, add one
+        astromesh = AstroMesh.new()
+        astroParent.add_child(astromesh)
     var astromeshmesh:Mesh = astromesh.mesh
+    if (astromeshmesh == null): #AstroMesh doesn't have a mesh, add one
+        astromeshmesh = SphereMesh.new()
+        astromesh.mesh = astromeshmesh
     var astromaterial:StandardMaterial3D = astromeshmesh.surface_get_material(0)
+    if (astromaterial == null): #mesh doesn't have a material, add one
+        astromaterial = StandardMaterial3D.new()
+        astromeshmesh.surface_set_material(0,astromaterial)
+        astromaterial.albedo_color = Color.DEEP_SKY_BLUE
     material.albedo_color = astromaterial.albedo_color
+    
+    
+
     
     #Begin draw
     immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP,material)
