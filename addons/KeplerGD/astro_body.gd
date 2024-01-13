@@ -79,7 +79,7 @@ var primary:AstroBody
 func _init(
     #name: String = "AstroBody",
     #mass: float = mass,
-    #orbit: Orbit = orbit,
+    orbit: Orbit = orbit,
     
 ) -> void:
     print("AstroBody_init")
@@ -100,7 +100,7 @@ func _ready()-> void:
     #print(mass)
     #print(orbit)
     if orbit == null:
-        orbit = Orbit.new(null,0,0,0,0,0,0)
+        orbit = Orbit.new()
     primary = orbit.primary
 
     #Convert Mass input from inspector to KG
@@ -133,6 +133,10 @@ func _ready()-> void:
     #var primary = orbit.primary		##The Primary for this Astrobody is based on it orbit
 
 # remaining built-in virtual methods
+func get_class()->String:
+    return "AstroBody"
+
+
 # public methods
 
 # @borrows KEPLER.Orbit.getElements as getElements 
@@ -183,15 +187,7 @@ func clone() -> AstroBody:
     var rotOmeg2:float = elements["rotOmeg"]
 
     #Part II: Create clone of Orbit
-    var cloneOrbit:Orbit = Orbit.new(
-        primary
-        ,a2
-        ,ecc2
-        ,mAnomaly2
-        ,rotI2
-        ,rotW2
-        ,rotOmeg2
-    )
+    var cloneOrbit:Orbit = orbit.clone()
 
     #Part III: Clone Astrobody
     #var cloneAstroBody:AstroBody = AstroBody.new(name,mass,cloneOrbit);
@@ -218,6 +214,6 @@ func addSatellite(satellite:AstroBody)->void:
 # * @public
 func removeSatellite(satellite:AstroBody)->void:
     satellites = satellites.filter(func(x:AstroBody)->bool:return x != satellite)
-   
+ 
 # private methods
 # subclasses

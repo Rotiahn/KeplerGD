@@ -80,3 +80,24 @@ const G = 6.674e-11 # Nm^2 / kg^2 = kg*m*(1/s^2)*m^2*(1/kg^2) = m^3/(kg*s^2)
 # private variables
 
 # @onready variables
+
+# Check if this Kepler Object has a child of a certain class, if so, return the first one found
+# * @function getChildByClass
+# * @param String - Name of the Class to search for.
+# * @returns {KEPLER} - Returns a KEPLER object which is a child of this Kepler Object
+# * @public
+func getChildByClass(classTarget:String)->Node:
+    var children:Array = get_children()
+    #var childQty:int = get_child_count()
+    #var childTarget:OrbitMesh = null
+    
+    for child in children:
+        if child.get_class() == classTarget:
+            return child
+        else:
+            continue
+    
+    #No OrbitMesh found
+    return null
+    pass
+
